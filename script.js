@@ -1,12 +1,23 @@
 let resultsContainer = document.getElementsByClassName("container")[0]
 
-const validateInput = (el) => {
-    if(el.value === ""){
-        resultsContainer.innerHTML = "<p>Type something in the above search input</p>"
-    }else{
-        generateResults(el.value, el)
+// const validateInput = (el) => {
+//     if(el.value === ""){
+//         resultsContainer.innerHTML = "<p>Type something in the above search input</p>"
+//     }else{
+//         debouncedGenerateResults(el.value, el)
+//     }
+// }
+// debounce function to limit the number of API calls while typing
+const debounce =(func, delay)=>{
+    let currentTimeout
+    return function(...args) {
+        clearTimeout(currentTimeout)
+        currentTimeout = setTimeout(() => {
+            func.apply(this, args)
+        }, delay)
     }
 }
+
 
 const generateResults = (searchValue, inputField) => {
     fetch(
@@ -35,3 +46,21 @@ const generateResults = (searchValue, inputField) => {
         }
     })
 }
+
+// 
+const input = document.getElementById("searchInput");
+
+input.addEventListener(
+    "input",
+    debounce(function (e) {
+        const value = e.target.value;
+
+        if (value.trim() === "") {
+            resultsContainer.innerHTML =
+                "<p>Type something in the above search input</p>";
+            return;
+        }
+
+        generateResults(value, e.target);
+    }, 500)
+);
